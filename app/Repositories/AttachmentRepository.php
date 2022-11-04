@@ -44,11 +44,11 @@ class AttachmentRepository extends BaseRepository
 
     public function uploadAttachment($files, $attachmentType, $postApplicationId) {
         foreach ($files as $file) {
-            
-            $path = $attachmentType == 1 ? $file->store('public/images') : $file->store('public/applications');
             $name = $file->getClientOriginalName();
             $fileSize = $file->getSize();
             $fileSize = number_format($fileSize / 1048576, 3);
+            $folderName = $attachmentType == 1 ? "images" : "applications";
+            $path = $file->move($folderName, $name);
             
             Attachment::create([
                 'post_id' => $attachmentType == 1 ? $postApplicationId : null,
@@ -59,5 +59,15 @@ class AttachmentRepository extends BaseRepository
             ]);
         }
         
+    }
+
+    public function downloadApplications($applicationId) {
+        $application = Attachment::where('attachment_type_id', 2)->select('id','attachment')
+        ->where('application_id', $applicationId)
+        ->latest()->first();
+
+        if($application) {
+            return response()->download(public_path($application->attachment), 'application.pdf');
+        }
     }
 }

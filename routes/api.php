@@ -29,5 +29,7 @@ Route::fallback(function () {
 });
 
 Route::post('login', [App\Http\Controllers\API\AuthController::class, 'login']);
-
 Route::post('sendSubscriptionEmail', [App\Http\Controllers\API\UserAPIController::class, 'sendSubscriptionEmail']);
+Route::get('downloadAttchment', [App\Http\Controllers\API\AttachmentAPIController::class, 'downloadApplications']);
+Route::get('getAllApplications', [App\Http\Controllers\API\ApplicationAPIController::class, 'index']);
+Route::get('getAllPosts', [App\Http\Controllers\API\PostAPIController::class, 'index']);

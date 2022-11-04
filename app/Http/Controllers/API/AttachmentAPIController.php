@@ -128,4 +128,13 @@ class AttachmentAPIController extends AppBaseController
 
         return $this->sendSuccess('Attachment deleted successfully');
     }
+
+    public function downloadApplications(Request $request) {
+        $input = $request->all();
+        $request->validate([
+            'application_id' => 'required'
+        ]);
+
+        return $application = $this->attachmentRepository->downloadApplications($input['application_id']);
+    }
 }
