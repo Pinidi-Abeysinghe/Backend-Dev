@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Attachment;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AttachmentRepository
@@ -44,19 +45,45 @@ class AttachmentRepository extends BaseRepository
 
     public function uploadAttachment($files, $attachmentType, $postApplicationId) {
         foreach ($files as $file) {
+
             $name = $file->getClientOriginalName();
+
             $fileSize = $file->getSize();
+
             $fileSize = number_format($fileSize / 1048576, 3);
-            $folderName = $attachmentType == 1 ? "images" : "applications";
-            $path = $file->move($folderName, $name);
-            
+
+            //$folderName = $attachmentType == 1 ? "images/" : "applications";
+
+            //$path = $file->move($folderName, $name);
+
+
+
+            //$fileName = 'profile-' . time() . '.' . $ext;
+
+            $ext = pathinfo($name, PATHINFO_EXTENSION);
+
+            $fileName = 'attachment-' . $name . time() . '.' . $ext;
+
+            $filePath = $attachmentType == 1 ? 'images/' . $fileName : 'applications/' . $fileName;
+
+            Storage::disk('public_uploads')->put($filePath, file_get_contents($file));
+
+           
+
             Attachment::create([
+
                 'post_id' => $attachmentType == 1 ? $postApplicationId : null,
+
                 'application_id' => $attachmentType == 2 ?  $postApplicationId : null,
+
                 'attachment_type_id' => $attachmentType,
-                'attachment' => $path,
+
+                'attachment' => $filePath,
+
                 'size' => $fileSize . ' MB'
+
             ]);
+
         }
         
     }
